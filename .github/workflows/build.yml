@@ -1,0 +1,23 @@
+name: pdfium
+
+env:
+  PDFium_BRANCH: chromium/4627
+  PDFium_V8: disabled
+  CONFIGURATION: Release
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build pdfium for Linux
+      run: ./build.sh
+    # - uses: actions/upload-artifact@v2
+    #   with:
+    #     name: Pdfium Linux
+    #     path: '*.so'
