@@ -4,6 +4,7 @@ env:
   PDFium_BRANCH: chromium/4627
   PDFium_V8: disabled
   CONFIGURATION: Release
+  PDFium_Library: static
 
 on:
   push:
@@ -17,7 +18,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build pdfium for Linux
       run: ./build.sh
-    # - uses: actions/upload-artifact@v2
-    #   with:
-    #     name: Pdfium Linux
-    #     path: '*.so'
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Pdfium Linux
+        path: '*.tgz'

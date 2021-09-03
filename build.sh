@@ -5,6 +5,7 @@
 # TARGET_CPU = ...
 # PDFium_BRANCH = master | chromium/3211 | ...
 # PDFium_V8 = enabled
+# PDFium_Library = shared
 
 set -ex
 
@@ -66,7 +67,7 @@ gclient sync
 
 # Patch
 cd "$PDFium_SOURCE_DIR"
-git apply -v "$PDFium_PATCH_DIR/shared_library.patch"
+[ "$PDFium_Library" == "shared" ] && git apply -v "$PDFium_PATCH_DIR/shared_library.patch"
 git apply -v "$PDFium_PATCH_DIR/relative_includes.patch"
 #git apply -v "$PDFium_PATCH_DIR/static_libstdcxx.patch"
 [ "$PDFium_V8" == "enabled" ] && git apply -v "$PDFium_PATCH_DIR/v8_init.patch"
@@ -93,8 +94,12 @@ cp -R "$PDFium_SOURCE_DIR/public" "$PDFium_INCLUDE_DIR"
 rm -f "$PDFium_INCLUDE_DIR/DEPS"
 rm -f "$PDFium_INCLUDE_DIR/README"
 rm -f "$PDFium_INCLUDE_DIR/PRESUBMIT.py"
-[ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.so" "$PDFium_LIB_DIR"
-[ "$OS" == "darwin" ] && mv "$PDFium_BUILD_DIR/libpdfium.dylib" "$PDFium_LIB_DIR"
+if [ "$PDFium_Library" == "shared" ]; then
+  [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.so" "$PDFium_LIB_DIR"
+  [ "$OS" == "darwin" ] && mv "$PDFium_BUILD_DIR/libpdfium.dylib" "$PDFium_LIB_DIR"
+else
+  [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.a" "$PDFium_LIB_DIR"
+fi
 if [ "$PDFium_V8" == "enabled" ]; then
   mkdir -p "$PDFium_RES_DIR"
   mv "$PDFium_BUILD_DIR/icudtl.dat" "$PDFium_RES_DIR"
