@@ -67,7 +67,8 @@ gclient sync
 
 # Patch
 cd "$PDFium_SOURCE_DIR"
-[ "$PDFium_Library" == "shared" ] && git apply -v "$PDFium_PATCH_DIR/shared_library.patch"
+[ ! "$PDFium_Library" == "static" ] && git apply -v "$PDFium_PATCH_DIR/shared_library.patch"
+[ "$PDFium_Library" == "static" ] && git apply -v "$PDFium_PATCH_DIR/static_library.patch"
 git apply -v "$PDFium_PATCH_DIR/relative_includes.patch"
 #git apply -v "$PDFium_PATCH_DIR/static_libstdcxx.patch"
 [ "$PDFium_V8" == "enabled" ] && git apply -v "$PDFium_PATCH_DIR/v8_init.patch"
@@ -94,11 +95,11 @@ cp -R "$PDFium_SOURCE_DIR/public" "$PDFium_INCLUDE_DIR"
 rm -f "$PDFium_INCLUDE_DIR/DEPS"
 rm -f "$PDFium_INCLUDE_DIR/README"
 rm -f "$PDFium_INCLUDE_DIR/PRESUBMIT.py"
-if [ "$PDFium_Library" == "shared" ]; then
+if [ "$PDFium_Library" == "static" ]; then
+  [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.a" "$PDFium_LIB_DIR"
+else
   [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.so" "$PDFium_LIB_DIR"
   [ "$OS" == "darwin" ] && mv "$PDFium_BUILD_DIR/libpdfium.dylib" "$PDFium_LIB_DIR"
-else
-  [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.a" "$PDFium_LIB_DIR"
 fi
 if [ "$PDFium_V8" == "enabled" ]; then
   mkdir -p "$PDFium_RES_DIR"
