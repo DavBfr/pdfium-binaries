@@ -96,7 +96,9 @@ rm -f "$PDFium_INCLUDE_DIR/DEPS"
 rm -f "$PDFium_INCLUDE_DIR/README"
 rm -f "$PDFium_INCLUDE_DIR/PRESUBMIT.py"
 if [ "$PDFium_Library" == "static" ]; then
-  [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/obj/{**/*.a,*.a}" "$PDFium_LIB_DIR"
+  if [ "$OS" == "linux" ]; then
+    find "$PDFium_BUILD_DIR/obj" -name "*.a" -exec mv "{}" "$PDFium_LIB_DIR" ";"
+  fi
 else
   [ "$OS" == "linux" ] && mv "$PDFium_BUILD_DIR/libpdfium.so" "$PDFium_LIB_DIR"
   [ "$OS" == "darwin" ] && mv "$PDFium_BUILD_DIR/libpdfium.dylib" "$PDFium_LIB_DIR"
